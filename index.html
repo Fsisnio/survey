@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="title">ALEXIA - Assistant Vocal Multilingue</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar custom-navbar">
+        <div class="navbar-left">
+            <img src="alexia-logo.png" alt="Alexia Logo" class="alexia-logo">
+            <a href="index.html" class="nav-link">Accueil</a>
+        </div>
+        <div class="navbar-right">
+            <span id="userStatus" class="user-status">Non connecté</span>
+            <a href="auth.html" class="nav-link" id="authNavLink">Authentification</a>
+            <button id="logoutNavBtn" style="display:none;" class="nav-link">Déconnexion</button>
+        </div>
+    </nav>
+    <div class="home-hero custom-hero">
+        <img src="alexia-logo.png" alt="Alexia Logo" class="alexia-logo-large">
+        <h1 class="alexia-title">ALEXIA</h1>
+        <div class="alexia-slogan">Votre assistant vocal multilingue intelligent</div>
+        <a href="#main-app" class="main-action-btn custom-btn">Commencer l'analyse vocale</a>
+    </div>
+    <div class="home-benefits custom-benefits">
+        <h2>Pourquoi choisir Alexia&nbsp;?</h2>
+        <ul>
+            <li>Analyse vocale en temps réel et multilingue</li>
+            <li>Interface simple et intuitive</li>
+            <li>Suggestions personnalisées pour améliorer votre expression</li>
+            <li>Exportation de rapports professionnels</li>
+            <li>Sécurité et confidentialité de vos données</li>
+        </ul>
+    </div>
+    <div id="main-app" class="container">
+        <h1 data-translate="title">ALEXIA - Assistant Vocal Multilingue</h1>
+        
+        <!-- Sélecteur de langue -->
+        <div class="language-ui-selector">
+            <label for="uiLanguageSelect">Interface Language / Langue de l'interface:</label>
+            <select id="uiLanguageSelect" class="select-style">
+                <option value="fr-FR">Français</option>
+                <option value="en-US">English</option>
+                <option value="fon-BJ">Fongbè</option>
+            </select>
+        </div>
+
+        <!-- Options de configuration -->
+        <div class="settings-container">
+            <div class="language-selector">
+                <label for="languageSelect" data-translate="speechLanguage">Langue de parole:</label>
+                <select id="languageSelect" class="select-style">
+                    <optgroup label="Langues Africaines">
+                        <option value="sw-KE">Swahili (Kenya)</option>
+                        <option value="sw-TZ">Swahili (Tanzanie)</option>
+                        <option value="am-ET">Amharique (Éthiopie)</option>
+                        <option value="zu-ZA">Zoulou (Afrique du Sud)</option>
+                        <option value="yo-NG">Yoruba (Nigeria)</option>
+                        <option value="ha-NG">Haoussa (Nigeria)</option>
+                        <option value="fon-BJ">Fon (Bénin)</option>
+                    </optgroup>
+                    <optgroup label="Langues Européennes">
+                        <option value="fr-FR" selected>Français (France)</option>
+                        <option value="fr-CA">Français (Canada)</option>
+                        <option value="en-US">Anglais (États-Unis)</option>
+                        <option value="en-GB">Anglais (Royaume-Uni)</option>
+                        <option value="de-DE">Allemand</option>
+                        <option value="es-ES">Espagnol</option>
+                        <option value="it-IT">Italien</option>
+                        <option value="pt-PT">Portugais</option>
+                    </optgroup>
+                    <optgroup label="Langues Asiatiques">
+                        <option value="zh-CN">Chinois (Mandarin)</option>
+                        <option value="ja-JP">Japonais</option>
+                        <option value="ko-KR">Coréen</option>
+                        <option value="hi-IN">Hindi</option>
+                        <option value="ar-SA">Arabe</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="autoStopCheckbox" checked>
+                <label for="autoStopCheckbox" data-translate="autoStop">Arrêt automatique à 2 minutes</label>
+            </div>
+        </div>
+
+        <!-- Informations sur la langue -->
+        <div class="language-info">
+            <p id="languageSupport" class="language-support-info" data-translate="languageSupport">Support de la langue: Vérifié</p>
+            <p id="dialectInfo" class="dialect-info" data-translate="dialectInfo">Dialecte: Standard</p>
+        </div>
+
+        <div class="recorder-container">
+            <button id="startButton" class="button" data-translate="startButton">Commencer l'enregistrement</button>
+            <div id="timer" class="timer">00:00</div>
+            <div id="status" class="status"></div>
+        </div>
+
+        <div class="results-container">
+            <div class="result-box">
+                <h3 data-translate="speechRate" data-translate-category="metrics">Vitesse de parole</h3>
+                <p id="wpm"><span>--</span> <span data-translate="wordsPerMinute" data-translate-category="metrics">mots/minute</span></p>
+            </div>
+            <div class="result-box">
+                <h3 data-translate="emotion" data-translate-category="metrics">Émotion détectée</h3>
+                <p id="emotion">--</p>
+            </div>
+            <div class="result-box">
+                <h3 data-translate="clarity" data-translate-category="metrics">Clarté</h3>
+                <p id="clarity">--/10</p>
+            </div>
+            <div class="result-box">
+                <h3 data-translate="engagement" data-translate-category="metrics">Engagement</h3>
+                <p id="engagement">--/10</p>
+            </div>
+        </div>
+
+        <!-- Métriques avancées -->
+        <div class="advanced-metrics">
+            <div class="metric-box">
+                <h3 data-translate="voiceAnalysis">Analyse vocale</h3>
+                <p id="voiceTone"><span data-translate="tone" data-translate-category="metrics">Ton</span>: --</p>
+                <p id="pauseCount"><span data-translate="pauses" data-translate-category="metrics">Pauses</span>: --</p>
+                <p id="hesitationCount"><span data-translate="hesitations" data-translate-category="metrics">Hésitations</span>: --</p>
+            </div>
+            <div class="metric-box">
+                <h3 data-translate="suggestions">Suggestions</h3>
+                <ul id="suggestions" class="suggestions-list">
+                    <li data-translate="defaultSuggestion">Les suggestions apparaîtront ici pendant votre discours</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="transcription" class="transcription"></div>
+
+        <!-- Zone de traduction -->
+        <div class="translation-container">
+            <div class="translation-controls">
+                <select id="translationTargetLanguage" class="language-select">
+                    <option value="fr-FR">Français</option>
+                    <option value="en-US">English</option>
+                    <option value="fon-BJ">Fongbè</option>
+                </select>
+                <button id="translateButton" class="button">Traduire</button>
+                <div class="auto-translate-option">
+                    <label>
+                        <input type="checkbox" id="autoTranslateCheckbox">
+                        Traduction automatique
+                    </label>
+                </div>
+            </div>
+            <div id="translationResult" class="translation-result">[Zone de traduction]</div>
+        </div>
+
+        <!-- Actions post-enregistrement -->
+        <div class="post-recording-actions">
+            <button id="downloadAudio" class="button secondary" disabled data-translate="downloadAudio">Télécharger l'audio</button>
+            <button id="downloadReport" class="button secondary" disabled data-translate="downloadReport">Télécharger le rapport</button>
+        </div>
+    </div>
+    <script src="translations.js"></script>
+    <script src="app.js"></script>
+    <style>
+    :root {
+        --teal: #009688;
+        --orange: #FFA726;
+        --white: #fff;
+        --navbar-bg: var(--teal);
+        --hero-bg: linear-gradient(135deg, var(--teal) 60%, var(--orange) 100%);
+        --benefit-bg: var(--white);
+        --benefit-text: var(--teal);
+        --btn-bg: var(--orange);
+        --btn-text: var(--teal);
+        --btn-bg-hover: #ffb74d;
+        --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    body {
+        background: #f5f6fa;
+        color: var(--teal);
+    }
+    .custom-navbar {
+        background: var(--navbar-bg);
+        color: var(--white);
+        border-radius: 0 0 18px 18px;
+        box-shadow: var(--shadow);
+        margin-bottom: 0;
+    }
+    .custom-navbar .nav-link {
+        color: var(--white);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .custom-navbar .nav-link:hover {
+        color: var(--orange);
+    }
+    .custom-navbar .user-status {
+        color: var(--orange);
+        font-weight: 600;
+    }
+    .alexia-logo {
+        height: 48px;
+        width: 48px;
+        margin-right: 1rem;
+        vertical-align: middle;
+        background: var(--white);
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        object-fit: contain;
+    }
+    .custom-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem 2rem 1rem;
+        background: var(--hero-bg);
+        border-radius: 0 0 32px 32px;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        color: var(--white);
+    }
+    .alexia-logo-large {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        background: var(--white);
+        object-fit: contain;
+    }
+    .alexia-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: 2px;
+        color: var(--white);
+        text-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .alexia-slogan {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        font-weight: 400;
+        opacity: 0.95;
+        color: var(--white);
+        text-align: center;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .custom-btn {
+        background: var(--btn-bg);
+        color: var(--btn-text);
+        padding: 1rem 2.5rem;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        transition: background 0.2s, color 0.2s;
+        margin-bottom: 1rem;
+        border: none;
+        outline: none;
+        display: inline-block;
+        text-align: center;
+    }
+    .custom-btn:hover {
+        background: var(--btn-bg-hover);
+        color: var(--teal);
+    }
+    .custom-benefits {
+        max-width: 700px;
+        margin: 2rem auto 2rem auto;
+        background: var(--benefit-bg);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 2rem 2rem 1.5rem 2rem;
+        text-align: center;
+    }
+    .custom-benefits h2 {
+        color: var(--teal);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    .custom-benefits ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: var(--benefit-text);
+        font-size: 1.1rem;
+    }
+    .custom-benefits li {
+        margin: 0.7rem 0;
+        padding-left: 1.2rem;
+        position: relative;
+        text-align: left;
+    }
+    .custom-benefits li:before {
+        content: '✔';
+        color: var(--orange);
+        position: absolute;
+        left: 0;
+        font-size: 1.1em;
+    }
+    @media (max-width: 600px) {
+        .custom-hero { padding: 2rem 0.5rem 1rem 0.5rem; }
+        .alexia-title { font-size: 2rem; }
+        .alexia-logo-large { width: 60px; height: 60px; }
+        .custom-benefits { padding: 1rem; }
+    }
+    </style>
+</body>
+</html> 
