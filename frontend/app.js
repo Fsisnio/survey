@@ -30,7 +30,26 @@ class ALEXIA {
         this.lastPauseTime = null;
         this.isPaused = false;
         this.accumulatedText = '';
-        this.currentLanguage = 'fr-FR'; // Langue par défaut
+        this.currentLanguage = 'fr-FR';
+        this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        // Vérification de la compatibilité de la reconnaissance vocale
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            console.warn('La reconnaissance vocale n\'est pas supportée sur ce navigateur');
+            this.showBrowserCompatibilityWarning();
+            return;
+        }
+
+        try {
+            this.recognition = new SpeechRecognition();
+            this.setupRecognition();
+        } catch (error) {
+            console.error('Erreur lors de l\'initialisation de la reconnaissance vocale:', error);
+            this.showBrowserCompatibilityWarning();
+            return;
+        }
 
         // Traductions de l'interface
         this.uiTranslations = {
@@ -315,10 +334,49 @@ class ALEXIA {
         this.setupTranslationListeners();
     }
 
+    showBrowserCompatibilityWarning() {
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'browser-warning';
+        warningDiv.innerHTML = this.isMobile ? 
+            'La reconnaissance vocale n\'est pas supportée sur ce navigateur mobile. Veuillez utiliser Safari sur iOS 14.5+ ou Chrome sur Android.' :
+            'La reconnaissance vocale n\'est pas supportée sur ce navigateur. Veuillez utiliser Chrome, Safari ou Edge.';
+        
+        document.querySelector('.recorder-container').prepend(warningDiv);
+        
+        if (this.startButton) {
+            this.startButton.disabled = true;
+            this.startButton.title = 'La reconnaissance vocale n\'est pas disponible';
+        }
+    }
+
     setupRecognition() {
+        if (!this.recognition) return;
+
         this.recognition.continuous = true;
         this.recognition.interimResults = true;
         this.recognition.lang = this.languageSelect.value;
+
+        // Ajout de la gestion des erreurs spécifiques mobile
+        this.recognition.onerror = (event) => {
+            console.error('Erreur de reconnaissance vocale:', event.error);
+            switch (event.error) {
+                case 'not-allowed':
+                    this.statusDisplay.textContent = 'Accès au microphone refusé';
+                    break;
+                case 'network':
+                    this.statusDisplay.textContent = 'Erreur réseau - Vérifiez votre connexion';
+                    break;
+                case 'no-speech':
+                    this.statusDisplay.textContent = 'Aucune parole détectée';
+                    break;
+                case 'service-not-allowed':
+                    this.statusDisplay.textContent = 'Service de reconnaissance non disponible';
+                    break;
+                default:
+                    this.statusDisplay.textContent = `Erreur: ${event.error}`;
+            }
+            this.stopRecording();
+        };
 
         this.recognition.onresult = (event) => {
             let finalTranscript = '';
