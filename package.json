@@ -1,22 +1,12 @@
 {
   "name": "speech-analysis-app",
   "version": "1.0.0",
-  "description": "A multilingual speech analysis application with field interview capabilities",
-  "main": "index.js",
+  "description": "Speech Analysis Application",
   "scripts": {
-    "start": "serve -s .",
-    "dev": "serve -s . -l 3000"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "serve": "^14.2.1"
+    "start": "cd backend && node server.js",
+    "install": "cd backend && npm install"
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "author": "",
-  "license": "MIT"
+  }
 }
