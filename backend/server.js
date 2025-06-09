@@ -17,7 +17,8 @@ app.use(cors({
 app.use(express.json());
 
 // Serve static files from the frontend directory
-app.use(express.static(path.join(__dirname, '../frontend')));
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
 
 // Helper function to read/write users
 function readUsers() {
@@ -79,9 +80,10 @@ app.get('/api/profile', requireAuth, (req, res) => {
 
 // Catch all route for SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
   console.log(`Serveur backend sur http://localhost:${PORT}`);
+  console.log(`Serving frontend from: ${frontendPath}`);
 });
