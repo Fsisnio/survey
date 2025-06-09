@@ -30,34 +30,7 @@ class ALEXIA {
         this.lastPauseTime = null;
         this.isPaused = false;
         this.accumulatedText = '';
-        this.currentLanguage = 'fr-FR';
-        
-        // Amélioration de la détection du navigateur et de la reconnaissance vocale
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        const isChrome = /chrome/.test(userAgent) && /google inc/.test(navigator.vendor.toLowerCase());
-        const isEdge = /edg/.test(userAgent);
-        
-        console.log('Navigateur détecté:', { isSafari, isChrome, isEdge });
-        
-        // Vérification de la compatibilité de la reconnaissance vocale
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        
-        if (!SpeechRecognition) {
-            console.warn('La reconnaissance vocale n\'est pas supportée sur ce navigateur');
-            this.showBrowserCompatibilityWarning();
-            return;
-        }
-
-        try {
-            this.recognition = new SpeechRecognition();
-            console.log('Recognition instance created successfully');
-            this.setupRecognition();
-        } catch (error) {
-            console.error('Erreur lors de l\'initialisation de la reconnaissance vocale:', error);
-            this.showBrowserCompatibilityWarning();
-            return;
-        }
+        this.currentLanguage = 'fr-FR'; // Langue par défaut
 
         // Traductions de l'interface
         this.uiTranslations = {
@@ -342,94 +315,10 @@ class ALEXIA {
         this.setupTranslationListeners();
     }
 
-    showBrowserCompatibilityWarning() {
-        const warningDiv = document.createElement('div');
-        warningDiv.className = 'browser-warning';
-        
-        // Détection plus précise du problème
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        const isChrome = /chrome/.test(userAgent) && /google inc/.test(navigator.vendor.toLowerCase());
-        const isEdge = /edg/.test(userAgent);
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        let message = '';
-        if (isMobile) {
-            if (isSafari) {
-                message = 'Veuillez autoriser l\'accès au microphone dans les paramètres de Safari.';
-            } else if (isChrome) {
-                message = 'Veuillez autoriser l\'accès au microphone dans les paramètres de Chrome.';
-            } else {
-                message = 'Veuillez utiliser Safari sur iOS ou Chrome sur Android.';
-            }
-        } else {
-            if (isSafari || isChrome || isEdge) {
-                message = 'Veuillez autoriser l\'accès au microphone dans les paramètres de votre navigateur.';
-            } else {
-                message = 'Veuillez utiliser Chrome, Safari ou Edge pour la reconnaissance vocale.';
-            }
-        }
-        
-        warningDiv.innerHTML = message;
-        document.querySelector('.recorder-container').prepend(warningDiv);
-        
-        if (this.startButton) {
-            this.startButton.disabled = false; // On laisse le bouton actif pour permettre de réessayer
-            this.startButton.title = 'Cliquez pour réessayer la reconnaissance vocale';
-        }
-    }
-
     setupRecognition() {
-        if (!this.recognition) return;
-
         this.recognition.continuous = true;
         this.recognition.interimResults = true;
         this.recognition.lang = this.languageSelect.value;
-
-        // Amélioration de la gestion des erreurs
-        this.recognition.onerror = (event) => {
-            console.error('Erreur de reconnaissance vocale:', event.error, event);
-            
-            let errorMessage = '';
-            switch (event.error) {
-                case 'not-allowed':
-                case 'permission-denied':
-                    errorMessage = 'Accès au microphone refusé. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.';
-                    break;
-                case 'no-speech':
-                    errorMessage = 'Aucune parole détectée. Veuillez parler plus fort ou vérifier votre microphone.';
-                    break;
-                case 'audio-capture':
-                    errorMessage = 'Aucun microphone détecté. Veuillez vérifier votre matériel.';
-                    break;
-                case 'network':
-                    errorMessage = 'Erreur réseau. Veuillez vérifier votre connexion internet.';
-                    break;
-                default:
-                    errorMessage = `Erreur: ${event.error}. Veuillez réessayer.`;
-            }
-            
-            // Afficher l'erreur
-            const warningDiv = document.querySelector('.browser-warning') || document.createElement('div');
-            warningDiv.className = 'browser-warning';
-            warningDiv.innerHTML = errorMessage;
-            if (!document.querySelector('.browser-warning')) {
-                document.querySelector('.recorder-container').prepend(warningDiv);
-            }
-            
-            if (this.isRecording) {
-                this.stopRecording();
-            }
-        };
-
-        // Amélioration de la gestion du début de la reconnaissance
-        this.recognition.onstart = () => {
-            console.log('Reconnaissance vocale démarrée');
-            const warningDiv = document.querySelector('.browser-warning');
-            if (warningDiv) {
-                warningDiv.remove();
-            }
-        };
 
         this.recognition.onresult = (event) => {
             let finalTranscript = '';
