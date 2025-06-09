@@ -2,10 +2,8 @@ services:
   - type: web
     name: speech-analysis
     env: node
-    buildCommand: |
-      cd backend
-      npm install
-    startCommand: cd backend && node server.js
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
